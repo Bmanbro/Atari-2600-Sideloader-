@@ -1,0 +1,77 @@
+{
+  "model": "Atari 2600+ Pac-Man Edition",
+  "firmware_version": "2.0.1.6",
+  "firmware_sha256": "3a49889ad852c3fdd3ed306255929d67e95befc1f2831ead5aa248346bf1281e",
+  "loader_offset_in_firmware": 102,
+  "loader_size_in_firmware": 192846,
+  "loader_sha256": "8e08e2055d30b2a36feb5b9fc85ec50a0267cbc3494dac82a4e1e6cff2548b44",
+  "read_loader": {
+    "usbplug_offset": 6474,
+    "usbplug_size": 83968,
+    "usbplug_decoded_sha256": "99d3bd99e5d0a6c00687d9292c121bd7a831376507c919d9e60615b894d80975",
+    "read_branch_offsets": [47618, 47756],
+    "sha256": "0a6879db9148e8804c8263456eb7d217a60f735b150cab457878d03272033b9f"
+  },
+  "usb_vendor_id": 8711,
+  "usb_product_id": 12556,
+  "oem_offset_in_firmware": 43092404,
+  "oem_size_in_firmware": 33554432,
+  "oem_sha256": "b35561ff9892d1a89f16770c2daff76602f8f4953888a24997ea36391c36ade1",
+  "oem_start_sector": 124928,
+  "oem_partition_sectors": 204800,
+  "keys_path": "/sys/devices/platform/gpio-keys-polled/keys",
+  "virtual_keys_path": "/tmp/atari-sideload/keys",
+  "cartridge_mask": 128,
+  "prosystem_rom_path": "/oem/retroarch/cores/game.a78",
+  "virtual_prosystem_rom_path": "/tmp/atari-sideload/game.a78",
+  "prosystem_rom_path_offset": 119668,
+  "cartridge_frontend_patch": {
+    "offset": 24648,
+    "original": "081096e5010051e3f1ffff0a",
+    "replacement": "6afaffeb2a00a0e32ceeffeb",
+    "sha256": "a6225425678377b9165a0f97d84d3b097809e06f19ab588be90a97904cb86529"
+  },
+  "cartridge_empty_read_patch": {
+    "patches": [
+      {
+        "offset": 20512,
+        "original": "060055e3",
+        "replacement": "0b0400ea"
+      },
+      {
+        "offset": 24660,
+        "original": "8c029fe50ceeffeb00508be50800a0e1c1edffeb6c029fe5008080e5e9ffffea",
+        "replacement": "000055e30300001af0f4ffeb000050e30190a003fefbff0a060055e3ebfbffea"
+      }
+    ],
+    "sha256": "3b6fc2df35a5c418f5b8b9210b5bfe92e495c89ed611097e2013f35ee3a5a237"
+  },
+  "cartridge_reader_reply_patch": {
+    "patches": [
+      {
+        "offset": 20568,
+        "original": "886056e5",
+        "replacement": "fd0300ea"
+      },
+      {
+        "offset": 24660,
+        "original": "8c029fe50ceeffeb00508be50800a0e1c1edffeb6c029fe5008080e5e9ffffea",
+        "replacement": "b80856e1ea180ee3010050e1886056e5fcfbff1aedf4ffeb000050e3fafbffea"
+      }
+    ],
+    "sha256": "b9c86cbd62c757471bbd3d18cf1695e483860d67a719c4935536d8c07680d1ae"
+  },
+  "files": {
+    "/vendor/bin/dmenu.bin": "a398c20d913ca89bb0d0c8d8a561fee3c1ed3bdb5f77e2813a63a05e7ae03d11",
+    "/vendor/bin/dmenu2.bin": "aed7808aa7ec24a1f437410387551949c068a557946ffefa4ccf9fa948844666",
+    "/vendor/bin/retroarch": "6ae05914ce74cf6707657089dfedbc6900974cbae50400f0ca2c3bebf80aea0b",
+    "/retroarch/cores/stella_libretro.so": "fb7b300ad346ebfb0e753abf93ecca94e696d2515cd2d3319f77416d6eb10ef3",
+    "/retroarch/cores/prosystem_libretro.so": "796371fb135b95a39b6d071aa2227a61b46b25c3442dabd6f92d00483474b777"
+  },
+  "core_path_offsets": {
+    "/retroarch/cores/stella_libretro.so": 2309912,
+    "/retroarch/cores/prosystem_libretro.so": 120584
+  },
+  "source_url": "https://atari.com/blogs/newsroom/updating-atari-firmware",
+  "download_url": "https://drive.google.com/file/d/1FrttH_wm7gqIFKYSxbp6hyebljAdswQH/view"
+}

@@ -1,0 +1,23 @@
+# Private state and generated artifacts
+/local/
+/build/
+/backup/
+/games/
+/firmware/
+/output/
+__pycache__/
+*.py[cod]
+.DS_Store
+*.img
+*.exe
+*.so
+*.bin
+*.a26
+*.a78
+*.rom
+*.zip
+*.7z
+*.rar
+*.sav
+*.state
+*.log
