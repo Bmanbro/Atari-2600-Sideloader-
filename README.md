@@ -5,6 +5,8 @@ A software sideloader for the **Atari 2600+ Pac-Man Edition running firmware
 the console. Insert a cartridge before powering on to use normal cartridge
 playback. No cutting, soldering, external game drive, or USB hub is required.
 
+![Atari sideloader game selection menu](docs/AtariSideloadMenu.jpg)
+
 **Payload version: 0.3.6.** Empty-slot menu startup, joystick selection, Fire,
 launch feedback, internal 2600 games, and cartridge playback were reported
 working on one Pac-Man console. The internal 7800 path uses the firmware's
