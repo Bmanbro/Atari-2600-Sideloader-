@@ -37,7 +37,6 @@ that require both buttons.
 2. [Add, remove, or rename games yourself](docs/ADDING_GAMES.md).
 3. [Restore an earlier setup or recover a failed write](docs/RECOVERY.md).
 4. [Architecture and development notes](docs/TECHNICAL.md).
-5. [Publish this source folder to GitHub](docs/PUBLISHING.md).
 
 After the first successful setup, adding games is:
 
