@@ -9,9 +9,8 @@ RUN=/tmp/atari-sideload
 SOURCE=$1
 last=
 while :; do
-    if ! raw=$(cat "$KEYS"); then
-        break
-    fi
+    raw=
+    IFS= read -r raw < "$KEYS" || [ -n "$raw" ] || break
     case "$raw" in *[!0-9]*|'') break ;; esac
     [ "$raw" -le 65535 ] || break
     # Removing the prepared drive lets the core's normal removal handling exit.

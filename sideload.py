@@ -165,14 +165,22 @@ def extract_firmware(source: Path, dest: Path) -> None:
         dest.write_bytes(oem)
 
 
-def rockchip_crc(data: bytes) -> int:
-    """BOOT container CRC: Rockchip's 0x04c10db7 polynomial, initial value 0."""
+def _rockchip_crc_table() -> tuple[int, ...]:
     table = []
     for value in range(256):
         crc = value << 24
         for _ in range(8):
             crc = ((crc << 1) ^ (0x04c10db7 if crc & 0x80000000 else 0)) & 0xffffffff
         table.append(crc)
+    return tuple(table)
+
+
+ROCKCHIP_CRC_TABLE = _rockchip_crc_table()
+
+
+def rockchip_crc(data: bytes) -> int:
+    """BOOT container CRC: Rockchip's 0x04c10db7 polynomial, initial value 0."""
+    table = ROCKCHIP_CRC_TABLE
     crc = 0
     for value in data:
         crc = ((crc << 8) & 0xffffffff) ^ table[(crc >> 24) ^ value]
@@ -520,11 +528,18 @@ def prepare_catalog(directory: Path, system: str) -> tuple[dict[str, bytes], lis
 def validate_payload(image: Path, record: dict) -> None:
     """Check managed files of a known bundle, allowing live OEM preferences to change."""
     validate_ext2(image)
+    dumped = {}
+
+    def dump(name: str) -> bytes:
+        if name not in dumped:
+            dumped[name] = dump_file(image, name)
+        return dumped[name]
+
     if (record.get('payload_version') not in SUPPORTED_VERSIONS or
             record.get('model') != PROFILE['model'] or
             record.get('firmware_version') != PROFILE['firmware_version']):
         raise Error('Unsupported installed payload profile')
-    marker = json.loads(dump_file(image, '/sideload/build.json'))
+    marker = json.loads(dump('/sideload/build.json'))
     for field in ('payload_version', 'model', 'firmware_version', 'source_sha256',
                   'source_kind', 'files', 'embedded_game', 'games'):
         if marker.get(field) != record.get(field):
@@ -533,8 +548,8 @@ def validate_payload(image: Path, record: dict) -> None:
                 '/sideload/stella_usb.so', '/sideload/prosystem_usb.so', '/vendor/bin/dmenu.bin'}
     if record['payload_version'] in CARTRIDGE_FIRST_VERSIONS:
         expected.update({'/sideload/boot.sh', '/sideload/cart-first.bin'})
-        stock_frontend = dump_file(image, '/vendor/bin/dmenu2.bin')
-        if dump_file(image, '/sideload/cart-first.bin') != patch_cartridge_frontend(
+        stock_frontend = dump('/vendor/bin/dmenu2.bin')
+        if dump('/sideload/cart-first.bin') != patch_cartridge_frontend(
                 stock_frontend, record['payload_version']):
             raise Error('Private cartridge frontend does not match its pinned patch')
     single, games = record.get('embedded_game'), record.get('games')
@@ -558,30 +573,30 @@ def validate_payload(image: Path, record: dict) -> None:
             if not isinstance(title, str) or not 1 <= len(title) <= 96 or any(not 32 <= ord(c) <= 126 for c in title):
                 raise Error('Invalid catalog title')
             content.append((f"/sideload/games/{game['sha256']}", game))
-        if dump_file(image, '/sideload/catalog.txt') != catalog_bytes(games):
+        if dump('/sideload/catalog.txt') != catalog_bytes(games):
             raise Error('Catalog does not match its bundle')
-        menu = dump_file(image, '/sideload/menu')
+        menu = dump('/sideload/menu')
         if menu[:6] != b'\x7fELF\x01\x01' or menu[18:20] != b'\x28\x00':
             raise Error('Invalid ARM menu executable')
     for directory, info in content:
         expected.update(directory+'/'+name for name in ('game.rom', 'game.json', 'manifest.txt'))
-        data = dump_file(image, directory+'/game.rom')
+        data = dump(directory+'/game.rom')
         if (not isinstance(info, dict) or info.get('system') not in ('2600', '7800') or
                 validate_rom(data, info['original_name'], info['system']) != info['system'] or
                 len(data) != info['size'] or digest(data) != info['sha256'] or
-                json.loads(dump_file(image, directory+'/game.json')) != info):
+                json.loads(dump(directory+'/game.json')) != info):
             raise Error('Internal game metadata or ROM mismatch')
         manifest = f"{FORMAT}\n{info['system']}\n{digest(data)}\n{len(data)}\n".encode()
-        if dump_file(image, directory+'/manifest.txt') != manifest:
+        if dump(directory+'/manifest.txt') != manifest:
             raise Error('Internal game manifest mismatch')
     if set(record['files']) != expected:
         raise Error('Bundle does not contain the expected payload files')
     for name, checksum in record['files'].items():
-        if digest(dump_file(image, name)) != checksum:
+        if digest(dump(name)) != checksum:
             raise Error(f'Installed payload file mismatch: {name}')
     for name, checksum in PROFILE['files'].items():
         actual_path = '/sideload/dmenu.stock' if name == '/vendor/bin/dmenu.bin' else name
-        if digest(dump_file(image, actual_path)) != checksum:
+        if digest(dump(actual_path)) != checksum:
             raise Error(f'Installed payload changed a stock file: {name}')
 
 

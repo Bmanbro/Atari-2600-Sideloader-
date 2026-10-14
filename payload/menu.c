@@ -91,11 +91,16 @@ static void box(int x,int y,int w,int h,unsigned rgb) {
 static void text(int x,int y,int scale,const char *s,unsigned rgb,int maxchars) {
  color(rgb);
  for(int i=0;s[i] && i<maxchars;i++)
-  for(int row=0;row<7;row++) for(int col=0;col<5;col++)
-   if(glyph(s[i],row)&(1u<<(4-col))) {
-    Rect r={x+(i*6+col)*scale,y+row*scale,scale,scale};
+  for(int row=0;row<7;row++) {
+   unsigned bits=glyph(s[i],row);
+   for(int col=0;col<5;) {
+    if(!(bits&(1u<<(4-col)))) { col++; continue; }
+    int start=col;
+    while(col<5 && (bits&(1u<<(4-col)))) col++;
+    Rect r={x+(i*6+start)*scale,y+row*scale,(col-start)*scale,scale};
     RenderFillRect(renderer,&r);
    }
+  }
 }
 static void draw(int selected,int connected,int starting) {
  color(0x101626); RenderClear(renderer);
